@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Windows.Forms;
+using ClientCard;
 using DemoLib;
 using DemoLib.Models.Clients;
+using DemoLib.Presenters;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace SimpleDemoWin
 {
     public partial class MainForm : Form
     {
         private List<Client> allClients_ = new List<Client>();
+        private MySQLClientsModel model_;
         public MainForm()
         {
             InitializeComponent();
@@ -21,11 +26,10 @@ namespace SimpleDemoWin
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            MySQLClientsModel model = new MySQLClientsModel();
+            model_ = new MySQLClientsModel();
 
-            allClients_ = model.ReadAllClients();
+            allClients_ = model_.ReadAllClients();
             ShowClients(allClients_);
-
         }
 
         private void ClientsListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -70,7 +74,7 @@ namespace SimpleDemoWin
             {
                 if ((String.IsNullOrEmpty(searchingText)
                      || client.Name.ToLower().Contains(searchingText.ToLower()))
-                    && (String.IsNullOrEmpty(alphabetText) 
+                    && (String.IsNullOrEmpty(alphabetText)
                      || client.Name[0] == alphabetText[0]))
                 {
                     resultClients.Add(client);
@@ -99,6 +103,24 @@ namespace SimpleDemoWin
         private void AlphabetComboBox_TextChanged(object sender, EventArgs e)
         {
             FilterAndSearch();
+        }
+
+        private void AddButton_Click(object sender, EventArgs e)
+        {
+            AddClientForm addForm = new AddClientForm(model_);
+            DialogResult result = addForm.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                model_.AddClient(addForm.GetNewClient());
+                allClients_.Clear();
+                allClients_ = model_.ReadAllClients();
+                ShowClients(allClients_);
+            }
+
+            if (result == DialogResult.Cancel)
+            {
+                return;
+            }
         }
     }
 }

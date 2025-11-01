@@ -8,7 +8,7 @@ namespace ClientCard
 {
     public partial class ClientView: UserControl, IClientView
     {
-        private Color defaultColor = Color.FromArgb(255, 192, 128);
+        private Color defaultColor = Color.FromArgb(192, 255, 255);
         private Color enteringColor = Color.FromName("SlateBlue");
         private Client client_;
 
